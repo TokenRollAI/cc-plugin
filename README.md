@@ -55,6 +55,22 @@ Sub-agent performs heavy reads → Delivers concise summaries → Main agent sta
 - Prioritizes novelty and explosive growth potential
 - Perfect for brainstorming sessions and innovation sprints
 
+### 💬 Interactive Thinking Partner
+**`/tr:discuss`** + **Discuss Agent** - Think through complex topics via structured dialogue
+- **Versatile:** Requirements, architecture, debugging, decisions, processes
+- **Adaptive:** Questions adjust based on your discussion goal
+- **Efficient:** 80% multiple-choice questions, 3-5 rounds typical
+- **Context-aware:** Can integrate with scout for existing codebase discussions
+- **Output-focused:** Produces structured summaries ready for action
+
+**The Challenge:**
+Jumping into implementation without thinking leads to unclear requirements, unexamined trade-offs, and costly rework.
+
+**The Solution:**
+Invest 5-10 minutes in structured dialogue → Clarify thinking → Act with confidence
+
+**Perfect for:** Requirements clarification, architecture decisions, debugging strategies, naming conventions, workflow design, or anytime you need to think something through before acting
+
 ---
 
 ## 🚀 Quick Start
@@ -250,6 +266,115 @@ User request → Scout research → Implementation → Summary
 
 ---
 
+#### `/tr:discuss` - Interactive Thinking Partner
+
+Think through complex topics via structured, adaptive dialogue before taking action.
+
+**The Problem:**
+Jumping into implementation without thinking leads to:
+- Unclear requirements → wasted iterations
+- Unexamined trade-offs → regrettable decisions
+- Missed edge cases → bugs and rework
+- Fuzzy goals → scope creep
+
+**The Solution:**
+Invest 5-10 minutes in structured dialogue to clarify your thinking before acting. The discuss agent adapts its questioning strategy based on your topic.
+
+**Versatile Discussion Types:**
+
+```bash
+# Requirements clarification
+/tr:discuss clarify requirements for user authentication feature
+
+# Architecture decisions
+/tr:discuss decide between microservices vs monolith
+
+# Debugging strategy
+/tr:discuss troubleshoot why API responses are slow
+
+# Naming/conventions
+/tr:discuss naming conventions for React components
+
+# Process design
+/tr:discuss define our code review workflow
+
+# Performance optimization
+/tr:discuss optimize database query performance
+
+# Security considerations
+/tr:discuss security implications of storing user data
+
+# Testing approach
+/tr:discuss testing strategy for payment integration
+```
+
+**Adaptive Frameworks:**
+
+The agent selects the appropriate questioning framework based on your topic:
+
+- **Framework A (Requirements):** Project context → Functional scope → Technical details → Non-functional needs
+- **Framework B (Architecture):** Constraints → Trade-offs → Alternatives → Risks
+- **Framework C (Debugging):** Problem definition → Context → Investigation → Hypotheses
+- **Framework D (Decisions):** Options → Criteria → Constraints → Implications
+- **Framework E (Process):** Goal → Stakeholders → Steps → Edge cases
+
+**Key Features:**
+
+1. **80/20 Question Strategy**
+   - 80% multiple-choice (fast, accurate responses)
+   - 20% open-ended (when options unpredictable)
+   - Always includes "Other" option for nuance
+
+2. **Progressive Depth**
+   - Starts with 2-3 high-level questions
+   - Narrows based on your answers
+   - Typically 3-5 rounds to full clarity
+
+3. **Active Listening**
+   - Summarizes understanding before each round
+   - Confirms alignment as dialogue progresses
+
+4. **Scout Integration**
+   - For existing codebase topics, may suggest scout first
+   - Scout gathers context → Discuss asks targeted questions
+   - Example: "Let me use scout to understand current auth implementation, then we'll discuss the refactoring approach"
+
+**Example Output Formats:**
+
+Discuss produces structured summaries adapted to your topic:
+
+- **Requirements:** User stories, acceptance criteria, technical specs, implementation roadmap
+- **Architecture:** Options table, pros/cons, decision criteria, recommendation
+- **Debugging:** Problem definition, hypotheses, investigation plan, next actions
+- **Decisions:** Context, options evaluated, trade-offs, recommendation with rationale
+- **Process:** Workflow steps, roles/responsibilities, edge case handling
+
+**Why Use It:**
+
+- ✅ Avoid costly rework by thinking first
+- ✅ 5-10 minutes of dialogue saves hours of iteration
+- ✅ Multiple-choice format is fast and easy
+- ✅ Adaptive strategy fits any discussion type
+- ✅ Produces actionable documentation
+- ✅ Especially valuable for complex or unfamiliar topics
+
+**When to Use:**
+
+- ✅ Fuzzy ideas that need structure
+- ✅ Decisions with multiple options
+- ✅ Need to examine trade-offs
+- ✅ Complex debugging requiring systematic approach
+- ✅ Process or workflow design
+
+**When to Skip:**
+
+- ❌ Requirements already crystal clear
+- ❌ Trivial, one-step tasks
+- ❌ Pure research (use scout instead)
+- ❌ Just exploring/learning (not deciding)
+
+---
+
 ### Agents
 
 #### `tr:scout` - Professional Research Specialist
@@ -293,6 +418,124 @@ Files and URLs examined
 # Scout 4: API integrations
 # Scout 5: Web research on best practices
 ```
+
+---
+
+#### `tr:discuss` - Interactive Thinking Partner
+
+A versatile discussion facilitator that helps you think through complex topics via structured, adaptive dialogue.
+
+**Available tools:** Read, Glob, Grep (for codebase context when needed)
+
+**Core Philosophy:**
+- Invest 5-10 minutes in structured thinking → Avoid hours of rework
+- Adaptive questioning based on discussion type
+- 80% multiple-choice questions → Fast and accurate
+- Scout integration → Context-aware for existing projects
+
+**Adaptive Frameworks:**
+
+The agent selects the right questioning strategy based on your topic:
+
+1. **Requirements Clarification**
+   - Project context → Functional scope → Technical details → Non-functional needs
+   - Example: "Clarify requirements for user authentication"
+
+2. **Architecture Discussion**
+   - Constraints → Trade-offs → Alternatives → Risks
+   - Example: "Decide between microservices vs monolith"
+
+3. **Debugging Strategy**
+   - Problem definition → Context → Investigation → Hypotheses
+   - Example: "Troubleshoot why API responses are slow"
+
+4. **Decision Making**
+   - Options → Criteria → Constraints → Implications
+   - Example: "Choose between library A and library B"
+
+5. **Process Design**
+   - Goal → Stakeholders → Steps → Edge cases
+   - Example: "Define our code review workflow"
+
+**Dialogue Flow:**
+
+```
+User: "/tr:discuss [topic]"
+        ↓
+Agent: Analyzes topic, selects appropriate framework
+        ↓
+Agent: Asks 2-3 high-level questions (Round 1)
+        ↓
+User: Answers (mostly multiple choice)
+        ↓
+Agent: Summarizes understanding, asks deeper questions (Round 2-4)
+        ↓
+User: Continues answering
+        ↓
+Agent: Presents structured summary
+        ↓
+User: Confirms or adjusts
+        ↓
+Agent: Outputs final summary + suggested next steps
+```
+
+**Output Formats (Adapted to Topic):**
+
+- **Requirements:** User stories, acceptance criteria, tech specs, roadmap
+- **Architecture:** Options table, pros/cons, decision criteria, recommendation
+- **Debugging:** Problem definition, hypotheses, investigation plan
+- **Decision:** Context, options evaluated, trade-offs, recommendation
+- **Process:** Workflow steps, roles, exception handling
+
+**Key Features:**
+
+1. **80/20 Question Strategy**
+   - 80% multiple-choice (3-5 options + "Other")
+   - 20% open-ended (when options unpredictable)
+
+2. **Progressive Depth**
+   - Starts broad, narrows based on answers
+   - 3-5 rounds typical
+   - User can stop anytime
+
+3. **Active Listening**
+   - Summarizes understanding before each round
+   - Confirms alignment throughout
+
+4. **Scout Integration**
+   - For existing codebase topics, may suggest scout first
+   - Scout gathers context → Discuss asks targeted questions
+
+**Versatile Discussion Scope:**
+
+**Technical topics:**
+- Feature requirements
+- Architecture decisions
+- Debugging strategies
+- Performance optimization
+- Security considerations
+- Testing approaches
+
+**Process topics:**
+- Workflow design
+- Team conventions
+- Review processes
+- Deployment strategies
+
+**Decision topics:**
+- Technology choices
+- Trade-off evaluations
+- Priority setting
+- Refactoring plans
+
+**Success Metrics:**
+
+A successful discussion:
+- ✅ 3-5 rounds to full clarity
+- ✅ 80%+ questions are multiple-choice
+- ✅ Structured, actionable output
+- ✅ User feels heard and understood
+- ✅ Ready to act with confidence
 
 ---
 
@@ -351,10 +594,12 @@ cc-plugin/
 ├── commands/             # Custom slash commands
 │   ├── hello.md         # Demo command
 │   ├── commit.md        # Git workflow automation
-│   └── withScout.md     # Research-driven workflow
+│   ├── withScout.md     # Research-driven workflow
+│   └── discuss.md       # Requirement clarification workflow
 ├── agents/               # Custom agents
 │   ├── helper.md        # General purpose assistant
 │   ├── scout.md         # Research specialist
+│   ├── discuss.md       # Requirement clarification expert
 │   └── super-idea.md    # Viral ideation tool
 └── hooks/                # Event hooks
     └── hooks.json       # Hook configuration
