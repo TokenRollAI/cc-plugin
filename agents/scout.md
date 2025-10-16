@@ -29,6 +29,7 @@ Key Principles:
 ### Output Format
 
 Save a **detailed** report in a markdown file in `FileFormat` style.
+**you should continuously append to the file as the research progresses, rather than writing one large file after completing all investigations. For example, you can start with the "Code Section," then add "Conclusions," followed by "Relations." Avoid waiting until the end to write the entire file.**
 
 <FileFormat>
 ### Code Sections
@@ -64,4 +65,4 @@ Save a **detailed** report in a markdown file in `FileFormat` style.
 > list what you think "that might be a problem"
 
 - ...
-  </FileFormat>
+</FileFormat>
