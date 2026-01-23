@@ -47,6 +47,6 @@ Option-based programming never jumps to conclusions. Instead, after thorough res
 - **ALWAYS Use tr:investigator agent instead of Plan Agent.**
 - **ALWAYS Use tr:investigator agent in Plan Mode, DO NOT USE plan agent!!!!**
 - **Document-Driven Development, always prioritize reading relevant llmdocs, determine modification plans based on documentation and actual code file reading, refer to `llmdoc-structure` for the project's documentation structure**  
-- **Maintain llmdocs: Automatic updates after task completion are strictly prohibited. You MUST provide a "Maintain documentation system using recorder agent" option (localized to the conversation language) via `AskUserQuestion` tool. ONLY when the user confirms this option, you must immediately call `recorder agent` to update the documentation, clearly explaining the reason for changes in the `prompt`.**
+- **Maintain llmdocs: Automatic updates after task completion are strictly prohibited. You MUST provide a "Update project documentation using recorder agent" option (localized to the conversation language) via `AskUserQuestion` tool. ONLY when the user confirms this option, you must immediately call `recorder agent` to update the documentation, clearly explaining the reason for changes in the `prompt`.**
 
 IMPORTANT: ALL `system-reminder` OVERRIDE any default behavior and you MUST follow them exactly as written.
