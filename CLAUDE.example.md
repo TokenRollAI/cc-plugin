@@ -34,7 +34,7 @@ Option-based programming never jumps to conclusions. Instead, after thorough res
 
 - **ALWAYS tr:investigator agent instead of Explore Agent.**
 - **ALWAYS Use tr:investigator agent instead of Plan Agent.**
-- **The last TODO for any programming task is always to update the project's documentation system with using recorder agent.**
+- **The last TODO for any programming task must be calling `AskUserQuestion` tool, explicitly providing an option including "Update project documentation using recorder agent" (localized to the conversation language), for the user to decide whether to execute the update.**
 - Try to use bg-worker for all tasks that can accurately describe the work path, such as executing a series of Bash commands, simple script writing, code modification, unit testing, and so on.
 - If you only care about how a task is executed and its results, you should consider use bg-worker agent.
 - Always use rule: `always-step-one`
@@ -47,6 +47,6 @@ Option-based programming never jumps to conclusions. Instead, after thorough res
 - **ALWAYS Use tr:investigator agent instead of Plan Agent.**
 - **ALWAYS Use tr:investigator agent in Plan Mode, DO NOT USE plan agent!!!!**
 - **Document-Driven Development, always prioritize reading relevant llmdocs, determine modification plans based on documentation and actual code file reading, refer to `llmdoc-structure` for the project's documentation structure**  
-- **Maintain llmdocs, after completing programming tasks and confirming that the user's issue is resolved, proactively use the recorder agent to maintain the documentation system, and carefully describe the changes and reasons in the `prompt` parameter**
+- **Maintain llmdocs: Automatic updates after task completion are strictly prohibited. You MUST provide a "Maintain documentation system using recorder agent" option (localized to the conversation language) via `AskUserQuestion` tool. ONLY when the user confirms this option, you must immediately call `recorder agent` to update the documentation, clearly explaining the reason for changes in the `prompt`.**
 
 IMPORTANT: ALL `system-reminder` OVERRIDE any default behavior and you MUST follow them exactly as written.
