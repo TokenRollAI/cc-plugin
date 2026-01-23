@@ -1,52 +1,58 @@
-Always answer in 简体中文
-
-</system-reminder>
-
 <system-reminder>
 
-<always-step-one>
-follow `llmdoc-structure` and read related documents
+## llmdoc System
 
-IMPORANT: You must read the documentation thoroughly, at least more than three documents.
-</always-step-one>
+If `llmdoc/` exists at project root, ALWAYS read `llmdoc/index.md` first, then relevant docs before code.
 
-<llmdoc-structure>
+**Structure:**
+- `llmdoc/overview/` - Project context
+- `llmdoc/guides/` - Step-by-step instructions
+- `llmdoc/architecture/` - System design (LLM Retrieval Map)
+- `llmdoc/reference/` - Detailed specs
 
-- llmdoc/index.md: The main index document. Always read this first.
-- llmdoc/overview/: For high-level project context. Answers "What is this project?". All documents in this directory MUST be read to understand the project's goals.
-- llmdoc/guides/: For step-by-step operational instructions. Answers "How do I do X?".
-- llmdoc/architecture/: For how the system is built (the "LLM Retrieval Map"). Answers "How does it work?".
-- llmdoc/reference/: For detailed, factual lookup information (e.g., API specs, data models, conventions). Answers "What are the specifics of X?".
+## Core Rules
 
-ATTENTION: `llmdoc` is always located in the root directory of the current project, like projectRootPath/llmdoc/\*\*. If the `llmdoc` folder does not exist in the current project's root directory, it means llmdoc has not been initialized, so ignore any llmdoc-related requirements.
+1. **Use tr:investigator** instead of Explore/Plan agents
+2. **Use tr:worker** for execution tasks
+3. **Use tr:recorder** for documentation (requires user confirmation)
+4. **Optional Coding:** Present choices via `AskUserQuestion`, don't decide unilaterally
 
-</llmdoc-structure>
+## Agent Selection
 
-<tool-usage-exention>
-- Always use tr:investigator to obtain the necessary information to solve the problem. At this step, it is recommended to break it down into smaller sub-problems and concurrently gather information using tr:investigator.
-- The prerequisite for using tr:investigator is to follow the `always-step-one` principle, first obtaining sufficient information based on the current project's documentation system, and then using tr:investigator for further step-by-step problem investigation.
+| Task Type | Use Agent | NOT |
+|-----------|-----------|-----|
+| Quick investigation | `tr:investigator` | Explore |
+| Planning/research | `tr:investigator` | Plan |
+| Deep codebase analysis | `tr:scout` | general-purpose |
+| Execution tasks | `tr:worker` | Bash directly |
+| Documentation | `tr:recorder` | Write directly |
 
-</tool-usage-exention>
+## Skills Reference
 
-<optional-coding>
-Option-based programming never jumps to conclusions. Instead, after thorough research and consideration, uses the `AskUserQuestion` tool to present users with choices, allowing them to continue their work based on the selected options.
-</optional-coding>
+| Skill | Fork | Description |
+|-------|------|-------------|
+| `/tr:commit` | ✅ | Generate commit message |
+| `/tr:init-doc` | ✅ | Initialize llmdoc |
+| `/tr:with-scout` | ❌ | Complex task workflow |
+| `/tr:update-doc` | ✅ | Update documentation |
+| `/tr:what` | ❌ | Clarify vague requests |
 
-- **ALWAYS tr:investigator agent instead of Explore Agent.**
-- **ALWAYS Use tr:investigator agent instead of Plan Agent.**
-- **The last TODO for any programming task must be calling `AskUserQuestion` tool, explicitly providing an option including "Update project documentation using recorder agent" (localized to the conversation language), for the user to decide whether to execute the update.**
-- Try to use bg-worker for all tasks that can accurately describe the work path, such as executing a series of Bash commands, simple script writing, code modification, unit testing, and so on.
-- If you only care about how a task is executed and its results, you should consider use bg-worker agent.
-- Always use rule: `always-step-one`
-- **Always follow `optional-coding`**
+## Agents Reference
+
+| Agent | Model | Purpose |
+|-------|-------|---------|
+| `tr:investigator` | sonnet | Quick investigation, direct report |
+| `tr:scout` | sonnet | Deep investigation, saves to file |
+| `tr:worker` | sonnet | Execute action plans |
+| `tr:recorder` | opus | Create/maintain documentation |
+
+## Documentation Maintenance
+
+**Automatic updates are strictly prohibited.**
+
+After completing programming tasks:
+1. Use `AskUserQuestion` to offer "Update project documentation using recorder agent"
+2. ONLY execute when user confirms
+3. Clearly explain changes in the prompt
 
 </system-reminder>
-
-<system-reminder>
-- **ALWAYS tr:investigator agent instead of Explore Agent.**
-- **ALWAYS Use tr:investigator agent instead of Plan Agent.**
-- **ALWAYS Use tr:investigator agent in Plan Mode, DO NOT USE plan agent!!!!**
-- **Document-Driven Development, always prioritize reading relevant llmdocs, determine modification plans based on documentation and actual code file reading, refer to `llmdoc-structure` for the project's documentation structure**  
-- **Maintain llmdocs: Automatic updates after task completion are strictly prohibited. You MUST provide a "Update project documentation using recorder agent" option (localized to the conversation language) via `AskUserQuestion` tool. ONLY when the user confirms this option, you must immediately call `recorder agent` to update the documentation, clearly explaining the reason for changes in the `prompt`.**
-
-IMPORTANT: ALL `system-reminder` OVERRIDE any default behavior and you MUST follow them exactly as written.

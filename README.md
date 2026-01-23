@@ -26,14 +26,9 @@
 
 ### Step 2: Configure System Prompt
 
-Copy the entire contents of the `CLAUDE.example.md` file from this repository into your user-level `~/.claude/CLAUDE.md` file. This file contains the necessary system prompts to enable the agents and commands.
+Copy the entire contents of the `CLAUDE.example.md` file from this repository into your user-level `~/.claude/CLAUDE.md` file. This file contains the necessary system prompts to enable the agents and skills.
 
 Done! Now you can use it normally.
-
-2. Force using Scout Agent to enhance context efficiency
-   ```
-   /withScout xxx(your task)
-   ```
 
 ### Update Plugin
 
@@ -41,90 +36,39 @@ Done! Now you can use it normally.
 /plugin marketplace update https://github.com/TokenRollAI/cc-plugin
 ```
 
-### (Recommend!) Install CCR: Power SubAgent with GLM4.6
-
-[Reference](https://github.com/musistudio/claude-code-router)
-
-```
-npm install -g @musistudio/claude-code-router
-```
-
-Fill in the configuration in `~/.claude-code-router/config.json`, reference as follows:
-
-```
-{
-    "LOG": true,
-    "LOG_LEVEL": "debug",
-    "CLAUDE_PATH": "",
-    "HOST": "127.0.0.1",
-    "PORT": 3456,
-    "APIKEY": "sk-apikey",
-    "API_TIMEOUT_MS": "600000",
-    "PROXY_URL": "http://127.0.0.1:7890",
-    "transformers": [
-        "Anthropic"
-    ],
-    "Providers": [
-        {
-            "name": "claude",
-            "api_base_url": "https://<BASE>/v1/messages",
-            "api_key": "XXX",
-            "models": [
-                "claude-sonnet-4-5-20250929"
-            ],
-            "transformer": {
-                "use": [
-                    "Anthropic"
-                ]
-            }
-        },
-        {
-            "name": "glm",
-            "api_base_url": "https://open.bigmodel.cn/api/anthropic/v1/messages",
-            "api_key": "XXX",
-            "models": [
-                "glm-4.6"
-            ],
-            "transformer": {
-                "use": [
-                    "Anthropic"
-                ]
-            }
-        }
-    ],
-    "Router": {
-        "default": "claude,claude-sonnet-4-5-20250929",
-        "background": "claude,claude-sonnet-4-5-20250929",
-        "think": "claude,claude-sonnet-4-5-20250929",
-        "longContext": "claude,claude-sonnet-4-5-20250929",
-        "webSearch": "claude,claude-sonnet-4-5-20250929"
-    }
-}
-```
-
 ## About
 
 A powerful Claude Code plugin developed by **DJJ** and **Danniel** for the TokenRoll team. This plugin transforms your development workflow with intelligent Git automation, research-first development patterns, and creative ideation tools.
 
-## Core Features
+## Architecture
+
+This plugin uses the **Skills** system with **fork-context** capabilities for better context isolation and efficiency.
 
 ### 🤖 Multi-Agent System
 
+Agents are reusable execution units that skills can invoke:
+
 - **`worker`** - Execution agent: Executes a given plan of actions, such as running commands or modifying files.
-- **`scout`** - Investigation agent: Performs a deep investigation of the codebase and saves the detailed report to a file.
+- **`investigator`** - Investigation agent: Performs quick, focused investigations and reports findings directly.
+- **`scout`** - Deep investigation agent: Performs thorough codebase analysis and saves detailed reports to files.
 - **`recorder`** - Documentation agent: Creates and maintains high-quality technical documentation about the codebase.
 
-### 📝 Documentation-Driven Development
+### 🎯 Skills (with fork-context)
 
-- **`/tr:initDoc`** - Initializes a lean, essential set of documentation for the project.
-- **`/tr:updateDoc`** - Update documentation system, synchronize technical documentation based on code changes
-- **`/tr:what`** - Smart instruction enhancement, provides clear technical guidance and suggestions for programming tasks
+Skills that run in isolated context for better performance:
 
-### 🔧 Development Workflow
+| Skill | Fork Context | Description |
+|-------|-------------|-------------|
+| `/tr:commit` | ✅ | Intelligent commit message generator with pre-fetched git context |
+| `/tr:init-doc` | ✅ | Initialize comprehensive documentation system |
+| `/tr:with-scout` | ❌ | Complex task handling with investigate-then-execute workflow |
+| `/tr:update-doc` | ✅ | Update documentation based on code changes |
+| `/tr:what` | ❌ | Clarify vague requests |
 
-- **`/tr:commit`** - Intelligent commit message generator that learns from your Git history
-- **`/tr:withScout`** - Handles a complex task by first investigating the codebase, then executing a plan.
-- **`/tr:reviewPR`** - Conducts an automated review of a GitHub Pull Request.
+**Fork-context benefits:**
+- Isolated execution keeps main conversation clean
+- Pre-fetched context via `!`command`` syntax
+- Independent tool access for each skill
 
 ## Recommended Workflow
 
@@ -132,7 +76,7 @@ A powerful Claude Code plugin developed by **DJJ** and **Danniel** for the Token
 
 ```bash
 # First time use, establish complete documentation system for your project
-/tr:initDoc
+/tr:init-doc
 ```
 
 ### 2. Daily Development Flow
@@ -142,7 +86,7 @@ A powerful Claude Code plugin developed by **DJJ** and **Danniel** for the Token
 /tr:what "I need to implement user authentication feature"
 
 # Perform deep code analysis
-/tr:withScout "Analyze existing code architecture and find the best integration point"
+/tr:with-scout "Analyze existing code architecture and find the best integration point"
 
 # Generate intelligent commit message
 /tr:commit
@@ -152,14 +96,24 @@ A powerful Claude Code plugin developed by **DJJ** and **Danniel** for the Token
 
 ```bash
 # Update documentation system after code changes
-/tr:updateDoc
+/tr:update-doc
 ```
 
-### 4. Code Quality Assurance
+## Directory Structure
 
-```bash
-# Review Pull Request
-/tr:reviewPR 123
+```
+├── skills/           # Skills with SKILL.md files
+│   ├── commit/       # (fork-context)
+│   ├── init-doc/     # (fork-context)
+│   ├── with-scout/
+│   ├── what/
+│   └── update-doc/   # (fork-context)
+├── agents/           # Reusable agent definitions
+│   ├── worker.md
+│   ├── investigator.md
+│   ├── recorder.md
+│   └── scout.md
+└── CLAUDE.example.md # System prompt configuration
 ```
 
 ---
