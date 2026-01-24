@@ -5,9 +5,15 @@ Always answer in 简体中文
 <system-reminder>
 
 <always-step-one>
-follow `llmdoc-structure` and read related documents
+**STEP ONE IS ALWAYS: READ LLMDOC!**
 
-IMPORTANT: You must read the documentation thoroughly, at least more than three documents.
+Before doing ANYTHING else, you MUST:
+1. Check if `llmdoc/` directory exists in the project root
+2. If exists, read `llmdoc/index.md` first
+3. Read ALL documents in `llmdoc/overview/`
+4. Read at least 3+ relevant documents before taking any action
+
+This is NON-NEGOTIABLE. Documentation first, code second.
 </always-step-one>
 
 <llmdoc-structure>

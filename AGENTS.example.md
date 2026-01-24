@@ -1,4 +1,8 @@
+# STEP ONE IS ALWAYS: READ LLMDOC!
+
 Before reading any source code, **ALWAYS check if `llmdoc/` exists** in the project root. If it exists, this is your primary source of truth.
+
+**THIS IS NON-NEGOTIABLE.** Every task, every investigation, every code change MUST start with reading the documentation.
 
 ### Why llmdoc First?
 
