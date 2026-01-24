@@ -30,11 +30,6 @@ Copy the entire contents of the `CLAUDE.example.md` file from this repository in
 
 Done! Now you can use it normally.
 
-2. Force using Scout Agent to enhance context efficiency
-   ```
-   /withScout xxx(your task)
-   ```
-
 ### Update Plugin
 
 ```
@@ -51,7 +46,7 @@ npm install -g @musistudio/claude-code-router
 
 Fill in the configuration in `~/.claude-code-router/config.json`, reference as follows:
 
-```
+```json
 {
     "LOG": true,
     "LOG_LEVEL": "debug",
@@ -61,35 +56,21 @@ Fill in the configuration in `~/.claude-code-router/config.json`, reference as f
     "APIKEY": "sk-apikey",
     "API_TIMEOUT_MS": "600000",
     "PROXY_URL": "http://127.0.0.1:7890",
-    "transformers": [
-        "Anthropic"
-    ],
+    "transformers": ["Anthropic"],
     "Providers": [
         {
             "name": "claude",
             "api_base_url": "https://<BASE>/v1/messages",
             "api_key": "XXX",
-            "models": [
-                "claude-sonnet-4-5-20250929"
-            ],
-            "transformer": {
-                "use": [
-                    "Anthropic"
-                ]
-            }
+            "models": ["claude-sonnet-4-5-20250929"],
+            "transformer": { "use": ["Anthropic"] }
         },
         {
             "name": "glm",
             "api_base_url": "https://open.bigmodel.cn/api/anthropic/v1/messages",
             "api_key": "XXX",
-            "models": [
-                "glm-4.6"
-            ],
-            "transformer": {
-                "use": [
-                    "Anthropic"
-                ]
-            }
+            "models": ["glm-4.6"],
+            "transformer": { "use": ["Anthropic"] }
         }
     ],
     "Router": {
@@ -108,23 +89,32 @@ A powerful Claude Code plugin developed by **DJJ** and **Danniel** for the Token
 
 ## Core Features
 
-### 🤖 Multi-Agent System
+### Skills (Auto-triggered with pre-fetched context)
 
-- **`worker`** - Execution agent: Executes a given plan of actions, such as running commands or modifying files.
-- **`scout`** - Investigation agent: Performs a deep investigation of the codebase and saves the detailed report to a file.
-- **`recorder`** - Documentation agent: Creates and maintains high-quality technical documentation about the codebase.
+| Skill | Trigger Words | Description |
+|-------|--------------|-------------|
+| `/investigate` | "what is", "how does X work", "analyze" | Quick codebase investigation with documentation-first approach |
+| `/commit` | "commit", "save changes", "wrap up" | Generates commit messages based on git history |
+| `/update-doc` | "update docs", "sync documentation" | Updates llmdoc after code changes |
+| `/doc-workflow` | "documentation workflow", "how to document" | Guidance on llmdoc documentation system |
+| `/read-doc` | "understand project", "read the docs" | Reads llmdoc for quick project overview |
 
-### 📝 Documentation-Driven Development
+### Commands (User-triggered workflows)
 
-- **`/tr:initDoc`** - Initializes a lean, essential set of documentation for the project.
-- **`/tr:updateDoc`** - Update documentation system, synchronize technical documentation based on code changes
-- **`/tr:what`** - Smart instruction enhancement, provides clear technical guidance and suggestions for programming tasks
+| Command | Description |
+|---------|-------------|
+| `/tr:initDoc` | Initialize the llmdoc documentation system for a new project |
+| `/tr:what` | Clarify vague requests with option-based questions |
+| `/tr:withScout` | Handle complex tasks: investigate first, then execute |
 
-### 🔧 Development Workflow
+### Agents (Internal execution engines)
 
-- **`/tr:commit`** - Intelligent commit message generator that learns from your Git history
-- **`/tr:withScout`** - Handles a complex task by first investigating the codebase, then executing a plan.
-- **`/tr:reviewPR`** - Conducts an automated review of a GitHub Pull Request.
+| Agent | Description |
+|-------|-------------|
+| `worker` | Executes well-defined plans with precision |
+| `investigator` | Rapid, stateless codebase analysis |
+| `recorder` | Creates and maintains llmdoc documentation |
+| `scout` | (Internal) Deep investigation for initDoc |
 
 ## Recommended Workflow
 
@@ -138,28 +128,31 @@ A powerful Claude Code plugin developed by **DJJ** and **Danniel** for the Token
 ### 2. Daily Development Flow
 
 ```bash
-# Get clear programming guidance
-/tr:what "I need to implement user authentication feature"
+# Quick codebase investigation (auto-triggered skill)
+/investigate "How does the auth system work?"
 
-# Perform deep code analysis
+# Handle complex tasks with investigation first
 /tr:withScout "Analyze existing code architecture and find the best integration point"
 
-# Generate intelligent commit message
-/tr:commit
+# Generate intelligent commit message (auto-triggered skill)
+/commit
 ```
 
 ### 3. Documentation Maintenance
 
 ```bash
-# Update documentation system after code changes
-/tr:updateDoc
+# Update documentation system after code changes (auto-triggered skill)
+/update-doc
 ```
 
-### 4. Code Quality Assurance
+### 4. Understand Existing Project
 
 ```bash
-# Review Pull Request
-/tr:reviewPR 123
+# Read project documentation for quick understanding
+/read-doc
+
+# Get guidance on documentation workflow
+/doc-workflow
 ```
 
 ---

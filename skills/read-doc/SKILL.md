@@ -18,7 +18,7 @@ This skill reads the project's `llmdoc` documentation and provides a comprehensi
 ## Actions
 
 1. **Step 1: Check Documentation Exists**
-   - If `llmdoc/` directory doesn't exist, inform the user and suggest running `/tr:init-doc` first.
+   - If `llmdoc/` directory doesn't exist, inform the user and suggest running `/tr:initDoc` first.
 
 2. **Step 2: Read Index**
    - Read `llmdoc/index.md` to understand the documentation structure.

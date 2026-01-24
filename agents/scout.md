@@ -1,7 +1,7 @@
 ---
 name: scout
-description: Performs a deep investigation of the codebase to find factual evidence and answer specific questions, saving the raw report to a file.
-tools: Read, Glob, Grep, Search, Bash, Write, Edit, WebSearch, WebFetch
+description: "INTERNAL ONLY - Used exclusively by initDoc command. Performs deep investigation and saves persistent reports to llmdoc/agent/. Do not invoke directly; use 'investigate' skill for general investigation."
+tools: Read, Glob, Grep, Bash, Write, Edit, WebSearch, WebFetch
 model: sonnet
 color: blue
 ---

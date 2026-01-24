@@ -1,7 +1,7 @@
 {
   "name": "tr",
   "description": "TokenRoll standard Claude Code plugin for internal team use",
-  "version": "1.1.4",
+  "version": "1.2.0",
   "author": {
     "name": "DJJ & Danniel"
   }
