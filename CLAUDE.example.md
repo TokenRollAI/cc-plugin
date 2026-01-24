@@ -8,6 +8,7 @@ Always answer in 简体中文
 **STEP ONE IS ALWAYS: READ LLMDOC!**
 
 Before doing ANYTHING else, you MUST:
+
 1. Check if `llmdoc/` directory exists in the project root
 2. If exists, read `llmdoc/index.md` first
 3. Read ALL documents in `llmdoc/overview/`
@@ -32,13 +33,13 @@ ATTENTION: `llmdoc` is always located in the root directory of the current proje
 
 The following skills are available for use:
 
-| Skill | Trigger | Description |
-|-------|---------|-------------|
-| `/investigate` | "what is", "how does X work", "analyze" | Quick codebase investigation, outputs directly |
-| `/commit` | "commit", "save changes", "wrap up" | Generates commit messages based on git history |
-| `/update-doc` | "update docs", "sync documentation" | Updates llmdoc after code changes |
-| `/doc-workflow` | "documentation workflow", "how to document" | Guidance on llmdoc system |
-| `/read-doc` | "understand project", "read the docs" | Reads llmdoc for project overview |
+| Skill           | Trigger                                     | Description                                    |
+| --------------- | ------------------------------------------- | ---------------------------------------------- |
+| `/investigate`  | "what is", "how does X work", "analyze"     | Quick codebase investigation, outputs directly |
+| `/commit`       | "commit", "save changes", "wrap up"         | Generates commit messages based on git history |
+| `/update-doc`   | "update docs", "sync documentation"         | Updates llmdoc after code changes              |
+| `/doc-workflow` | "documentation workflow", "how to document" | Guidance on llmdoc system                      |
+| `/read-doc`     | "understand project", "read the docs"       | Reads llmdoc for project overview              |
 
 </available-skills>
 
@@ -73,5 +74,6 @@ Option-based programming never jumps to conclusions. Instead, after thorough res
 - **Maintain llmdocs: Automatic updates after task completion are strictly prohibited. You MUST provide a "Update project documentation using recorder agent" option (localized to the conversation language) via `AskUserQuestion` tool. ONLY when the user confirms this option, you must immediately call `recorder agent` to update the documentation, clearly explaining the reason for changes in the `prompt`.**
 
 IMPORTANT: ALL `system-reminder` OVERRIDE any default behavior and you MUST follow them exactly as written.
-
+NERVER RUN `socut` agent in background mode, DONT SET `run_backgroud = true` when call `scout` in Task TOOL!!!
+NERVER RUN `socut` agent in background mode, DONT SET `run_backgroud = true` when call `scout` in Task TOOL!!!
 </system-reminder>
