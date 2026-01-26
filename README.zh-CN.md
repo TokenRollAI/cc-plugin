@@ -2,7 +2,7 @@
 
 <div align="center">
 
-**TokenRoll Claude Code Plugin: CC Coding 的最佳实践**
+**llmdoc + SubAgent RAG: 解决 Context Floor 问题**
 
 [![GitHub](https://img.shields.io/badge/GitHub-TokenRollAI%2Fcc--plugin-blue?logo=github)](https://github.com/TokenRollAI/cc-plugin)
 
@@ -12,160 +12,177 @@
 
 ---
 
-## 安装
+## 问题：Context Floor
 
-### Step 1: 安装插件
+在严肃的面向生产的环境中，AI Coding Agent 面临一个根本性的挑战：**它们并不真正了解你的代码库**。它们通过 CLAUDE.md + 大量阅读代码文件来感知当前环境，这导致：
+
+- 在达到足够上下文之前，不断地调用工具
+- Token 消耗高，信息密度低
+- 到达上下文就绪的时间（TTCR）太慢
+
+我们把"满足 Agent 解决需求的 context 的丰富度"称之为 **Context Floor**。
+
+### 现有方案的不足
+
+| 方案 | 工具调用 | Token 占用 | 信息密度 | 效果 |
+|------|---------|-----------|---------|------|
+| LSP MCP | 高 | 中等 | 高 | 好，但慢 |
+| ACE / RAG | 低 | 低 | 稀疏 | 关联性差 |
+| Agentic RAG (Explorer) | 中等 | 低 | 高 | 好，但 TTCR 难以忍受 |
+
+## 我们的方案：llmdoc + SubAgent RAG
+
+**足够快、信息密度足够高、主 Agent Token 占用足够少、信息和任务存在强关联且有效。**
+
+### llmdoc
+
+一个在设计之初就用来解决 AI 快速获取高密度信息 + 人类可读性的文档系统。
+
+脱胎于 [Diataxis](https://diataxis.fr/)，针对 LLM 检索进行优化：
 
 ```
+llmdoc/
+├── index.md          # 入口 - 永远首先阅读
+├── overview/         # "这个项目是什么？" - 必须全部阅读
+├── guides/           # "如何做 X？" - 分步指南
+├── architecture/     # "它是怎么工作的？" - LLM 检索地图
+└── reference/        # "X 的具体细节是什么？" - API 规范、约定
+```
+
+**核心设计原则：**
+- 利用 Agent 能够快速批量 Read 的能力
+- 文档中保留最关键的文件路径 + 负责的模块说明
+- 项目概览 + 架构 + 通过主题串联的 guides + reference
+
+示例：[TokenRoll/minicc/llmdoc](https://github.com/TokenRollAI/minicc/tree/main/llmdoc)
+
+### SubAgent RAG
+
+主要做两件事情：
+1. **调研**：基于 llmdoc + 现有的代码文件，调研拆解后的任务作为前置条件
+2. **记录**：在完成了编码任务之后，自动的更新维护 llmdoc
+
+---
+
+## 快速开始
+
+### Step 1：安装插件
+
+```bash
 # 添加 TokenRoll 插件市场
 /plugin marketplace add https://github.com/TokenRollAI/cc-plugin
 
-# 下载tr插件
+# 安装 tr 插件
 /plugin install tr@cc-plugin
 ```
 
-### Step 2: 配置系统提示词
+### Step 2：配置系统提示词
 
-将本仓库中的 `CLAUDE.example.md` 文件的全部内容，复制到您用户级的 `~/.claude/CLAUDE.md` 文件中。此文件包含了启用 Agent 和 Command 所必需的系统提示。
+将 [`CLAUDE.example.md`](CLAUDE.example.md) 的内容复制到 `~/.claude/CLAUDE.md` 文件中。
 
-好了, 现在你可以正常使用了
+**就这样。** 配置完成后，所有行为自动激活：
 
-2. 强制使用 Scout Agent 加强上下文紧凑程度
-   ```
-   /withScout xxx(你要做的任务)
-   ```
+- Agent 会**永远优先阅读 llmdoc**
+- 调研使用**文档优先的方法**
+- 完成编码任务后，Agent 会**询问是否更新文档**
+- 所有 skill 根据上下文自动触发
 
 ### 更新插件
 
-```
+```bash
 /plugin marketplace update https://github.com/TokenRollAI/cc-plugin
 ```
 
-### (强烈推荐) 安装 CCR: 使用 GLM4.6 驱动 SubAgent
+---
 
-[参考](https://github.com/musistudio/claude-code-router)
+## 工作原理
 
-```
-npm install -g @musistudio/claude-code-router
-```
+### 自动行为（无需命令）
 
-在 `~/.claude-code-router/config.json` 中填写配置, 参考如下
+配置 `CLAUDE.example.md` 后，这些行为**始终激活**：
 
-```
-{
-    "LOG": true,
-    "LOG_LEVEL": "debug",
-    "CLAUDE_PATH": "",
-    "HOST": "127.0.0.1",
-    "PORT": 3456,
-    "APIKEY": "sk-apikey",
-    "API_TIMEOUT_MS": "600000",
-    "PROXY_URL": "http://127.0.0.1:7890",
-    "transformers": [
-        "Anthropic"
-    ],
-    "Providers": [
-        {
-            "name": "claude",
-            "api_base_url": "https://<BASE>/v1/messages",
-            "api_key": "XXX",
-            "models": [
-                "claude-sonnet-4-5-20250929"
-            ],
-            "transformer": {
-                "use": [
-                    "Anthropic"
-                ]
-            }
-        },
-        {
-            "name": "glm",
-            "api_base_url": "https://open.bigmodel.cn/api/anthropic/v1/messages",
-            "api_key": "XXX",
-            "models": [
-                "glm-4.6"
-            ],
-            "transformer": {
-                "use": [
-                    "Anthropic"
-                ]
-            }
-        }
-    ],
-    "Router": {
-        "default": "claude,claude-sonnet-4-5-20250929",
-        "background": "claude,claude-sonnet-4-5-20250929",
-        "think": "claude,claude-sonnet-4-5-20250929",
-        "longContext": "claude,claude-sonnet-4-5-20250929",
-        "webSearch": "claude,claude-sonnet-4-5-20250929"
-    }
-}
-```
+| 行为 | 效果 |
+|------|------|
+| **文档优先** | Agent 在任何操作前先阅读 `llmdoc/` |
+| **智能调研** | 使用 `investigator` agent 而非通用探索 |
+| **选项式编程** | 不会直接下结论；通过问题呈现选择 |
+| **文档维护提示** | 编码后询问是否更新文档 |
 
-## 关于
+### 可用 Skills（自动触发）
 
-由 **DJJ** 和 **Danniel** 为 TokenRoll 团队开发的强大 Claude Code 插件。本插件通过智能 Git 自动化、研究优先开发模式和创意构思工具，彻底改变你的开发工作流。
+这些 skill 根据你的提示自动激活：
 
-## 核心功能
+| Skill | 触发词 | 描述 |
+|-------|--------|------|
+| `/investigate` | "什么是"、"X怎么工作"、"分析" | 快速代码库调查 |
+| `/commit` | "提交"、"commit" | 生成提交信息 |
+| `/update-doc` | "更新文档"、"同步文档" | 更新 llmdoc |
+| `/read-doc` | "了解项目"、"读文档" | 阅读 llmdoc 概览 |
 
-### 🤖 多代理系统
+### 命令（需要精确控制时）
 
-- **`worker`** - 执行代理: 执行一个给定的行动计划，例如运行命令或修改文件。
-- **`scout`** - 调查代理: 对代码库进行深入调查，并将详细报告保存到文件中。
-- **`recorder`** - 文档代理: 创建并维护关于代码库的高质量技术文档。
+| 命令 | 描述 |
+|------|------|
+| `/tr:initDoc` | 为新项目初始化 llmdoc |
+| `/tr:withScout` | 复杂任务：先深度调研，再执行 |
+| `/tr:what` | 通过结构化问题澄清模糊请求 |
 
-### 📝 文档驱动开发
+---
 
-- **`/tr:initDoc`** - 为项目初始化一个精简、核心的文档集。
-- **`/tr:updateDoc`** - 更新文档系统，基于代码变更同步更新技术文档
-- **`/tr:what`** - 智能指令强化，为编程任务提供清晰的技术指导和建议
+## 推荐工作流
 
-### 🔧 开发工作流
-
-- **`/tr:commit`** - 智能提交信息生成器，学习您的 Git 历史并生成高质量提交信息
-- **`/tr:withScout`** - 通过先调查代码库再执行计划的方式来处理复杂任务。
-- **`/tr:reviewPR`** - 对 GitHub Pull Request 进行自动化审查。
-
-## 推荐使用流程
-
-### 1. 初始化新项目
+### 新项目
 
 ```bash
-# 首次使用，为项目建立完整的文档系统
+# 初始化文档系统
 /tr:initDoc
 ```
 
-### 2. 日常开发流程
+### 日常开发
 
-```bash
-# 获得清晰的编程指导
-/tr:what "我需要实现用户认证功能"
+自然对话即可，系统会处理其余的：
 
-# 进行深度代码分析
-/tr:withScout "分析现有代码架构，找出最佳集成点"
+```
+"认证系统是怎么工作的？"
+# -> 自动触发 /investigate，优先读取 llmdoc
 
-# 生成智能提交信息
-/tr:commit
+"添加一个用户资料的 API 端点"
+# -> 读取 llmdoc，调研，实现，询问是否更新文档
+
+"commit"
+# -> 自动触发 /commit，生成智能提交信息
 ```
 
-### 3. 文档维护
+---
 
-```bash
-# 代码变更后更新文档系统
-/tr:updateDoc
-```
+## 成本与效果
 
-### 4. 代码质量保证
+**诚实评估**：这套方案大概用 **1.5 倍的价钱**完成了从 85 分到 90 分的效果提升。
 
-```bash
-# 审查Pull Request
-/tr:reviewPR 123
-```
+- 简单项目：效果一般
+- 复杂项目：收益显著
+- 生产级代码库（10万+ 行）：效果出色
+
+在我们的线上业务后端（约 10 万行代码）：
+- 需求完成成本：**$1-5 / 功能**
+- 人类介入：**大大降低**
+- 输出质量：**Review 后稍作修改即可放心交付**
+
+---
+
+## 内部 Agents
+
+| Agent | 用途 |
+|-------|------|
+| `worker` | 精确执行明确定义的计划 |
+| `investigator` | 快速、无状态的代码库分析 |
+| `recorder` | 创建和维护 llmdoc 文档 |
+| `scout` | 为 initDoc 进行深度调查 |
 
 ---
 
 <div align="center">
 
-Made with ❤️ by DJJ & Danniel
+由 **DJJ** 和 **Danniel** 为 TokenRoll 团队精心打造
 
 </div>

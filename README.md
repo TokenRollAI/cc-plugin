@@ -2,7 +2,7 @@
 
 <div align="center">
 
-**TokenRoll Claude Code Plugin: Best Practices for CC Coding**
+**llmdoc + SubAgent RAG: Solve the Context Floor Problem**
 
 [![GitHub](https://img.shields.io/badge/GitHub-TokenRollAI%2Fcc--plugin-blue?logo=github)](https://github.com/TokenRollAI/cc-plugin)
 
@@ -12,11 +12,63 @@
 
 ---
 
-## Installation
+## The Problem: Context Floor
+
+In serious production environments, AI Coding Agents face a fundamental challenge: **they don't truly understand your codebase**. They achieve understanding through CLAUDE.md + massive code file reading, which leads to:
+
+- Endless tool calls before reaching sufficient context
+- High token consumption with low information density
+- Slow Time to Context Ready (TTCR)
+
+We call the "minimum context richness required for an Agent to solve a task" the **Context Floor**.
+
+### Existing Solutions Fall Short
+
+| Approach | Tool Calls | Token Usage | Info Density | Effectiveness |
+|----------|-----------|-------------|--------------|---------------|
+| LSP MCP | High | Medium | High | Good, but slow |
+| ACE / RAG | Low | Low | Sparse | Poor correlation |
+| Agentic RAG (Explorer) | Medium | Low | High | Good, but TTCR too slow |
+
+## Our Solution: llmdoc + SubAgent RAG
+
+**Fast. High-density. Low main-agent token usage. Strongly correlated with tasks.**
+
+### llmdoc
+
+A documentation system designed from the ground up for AI to quickly acquire high-density information while remaining human-readable.
+
+Based on [Diataxis](https://diataxis.fr/), optimized for LLM retrieval:
+
+```
+llmdoc/
+├── index.md          # Entry point - always read first
+├── overview/         # "What is this project?" - MUST read all
+├── guides/           # "How do I do X?" - step-by-step instructions
+├── architecture/     # "How does it work?" - LLM retrieval map
+└── reference/        # "What are the specifics?" - API specs, conventions
+```
+
+**Key Design Principles:**
+- Leverages Agent's ability to batch-read files quickly
+- Documents retain critical file paths + module descriptions
+- Project overview + architecture + topic-linked guides + references
+
+Example: [TokenRoll/minicc/llmdoc](https://github.com/TokenRollAI/minicc/tree/main/llmdoc)
+
+### SubAgent RAG
+
+Two primary functions:
+1. **Investigation**: Based on llmdoc + existing code, investigate decomposed tasks as prerequisites
+2. **Recording**: After completing coding tasks, automatically maintain llmdoc
+
+---
+
+## Quick Start
 
 ### Step 1: Install Plugin
 
-```
+```bash
 # Add TokenRoll plugin marketplace
 /plugin marketplace add https://github.com/TokenRollAI/cc-plugin
 
@@ -26,146 +78,111 @@
 
 ### Step 2: Configure System Prompt
 
-Copy the entire contents of the `CLAUDE.example.md` file from this repository into your user-level `~/.claude/CLAUDE.md` file. This file contains the necessary system prompts to enable the agents and commands.
+Copy the contents of [`CLAUDE.example.md`](CLAUDE.example.md) into your `~/.claude/CLAUDE.md` file.
 
-Done! Now you can use it normally.
+**That's it.** Once configured, all behaviors activate automatically:
 
-2. Force using Scout Agent to enhance context efficiency
-   ```
-   /withScout xxx(your task)
-   ```
+- Agent will **always read llmdoc first** before any action
+- Investigation uses **documentation-first approach**
+- After coding tasks, Agent will **ask if you want to update docs**
+- All skills trigger automatically based on context
 
 ### Update Plugin
 
-```
+```bash
 /plugin marketplace update https://github.com/TokenRollAI/cc-plugin
 ```
 
-### (Recommend!) Install CCR: Power SubAgent with GLM4.6
+---
 
-[Reference](https://github.com/musistudio/claude-code-router)
+## How It Works
 
-```
-npm install -g @musistudio/claude-code-router
-```
+### Automatic Behaviors (No Commands Needed)
 
-Fill in the configuration in `~/.claude-code-router/config.json`, reference as follows:
+Once `CLAUDE.example.md` is configured, these behaviors are **always active**:
 
-```
-{
-    "LOG": true,
-    "LOG_LEVEL": "debug",
-    "CLAUDE_PATH": "",
-    "HOST": "127.0.0.1",
-    "PORT": 3456,
-    "APIKEY": "sk-apikey",
-    "API_TIMEOUT_MS": "600000",
-    "PROXY_URL": "http://127.0.0.1:7890",
-    "transformers": [
-        "Anthropic"
-    ],
-    "Providers": [
-        {
-            "name": "claude",
-            "api_base_url": "https://<BASE>/v1/messages",
-            "api_key": "XXX",
-            "models": [
-                "claude-sonnet-4-5-20250929"
-            ],
-            "transformer": {
-                "use": [
-                    "Anthropic"
-                ]
-            }
-        },
-        {
-            "name": "glm",
-            "api_base_url": "https://open.bigmodel.cn/api/anthropic/v1/messages",
-            "api_key": "XXX",
-            "models": [
-                "glm-4.6"
-            ],
-            "transformer": {
-                "use": [
-                    "Anthropic"
-                ]
-            }
-        }
-    ],
-    "Router": {
-        "default": "claude,claude-sonnet-4-5-20250929",
-        "background": "claude,claude-sonnet-4-5-20250929",
-        "think": "claude,claude-sonnet-4-5-20250929",
-        "longContext": "claude,claude-sonnet-4-5-20250929",
-        "webSearch": "claude,claude-sonnet-4-5-20250929"
-    }
-}
-```
+| Behavior | What Happens |
+|----------|--------------|
+| **Documentation First** | Agent reads `llmdoc/` before any action |
+| **Smart Investigation** | Uses `investigator` agent instead of generic exploration |
+| **Option-Based Coding** | Never jumps to conclusions; presents choices via questions |
+| **Doc Maintenance Prompt** | After coding, asks if you want to update documentation |
 
-## About
+### Available Skills (Auto-Triggered)
 
-A powerful Claude Code plugin developed by **DJJ** and **Danniel** for the TokenRoll team. This plugin transforms your development workflow with intelligent Git automation, research-first development patterns, and creative ideation tools.
+These skills activate automatically based on your prompts:
 
-## Core Features
+| Skill | Triggers | Description |
+|-------|----------|-------------|
+| `/investigate` | "what is", "how does X work", "analyze" | Quick codebase investigation |
+| `/commit` | "commit", "save changes" | Generate commit message |
+| `/update-doc` | "update docs", "sync documentation" | Update llmdoc |
+| `/read-doc` | "understand project", "read the docs" | Read llmdoc overview |
 
-### 🤖 Multi-Agent System
+### Commands (When You Need Control)
 
-- **`worker`** - Execution agent: Executes a given plan of actions, such as running commands or modifying files.
-- **`scout`** - Investigation agent: Performs a deep investigation of the codebase and saves the detailed report to a file.
-- **`recorder`** - Documentation agent: Creates and maintains high-quality technical documentation about the codebase.
+| Command | Description |
+|---------|-------------|
+| `/tr:initDoc` | Initialize llmdoc for a new project |
+| `/tr:withScout` | Complex tasks: deep investigation first, then execute |
+| `/tr:what` | Clarify vague requests with structured questions |
 
-### 📝 Documentation-Driven Development
-
-- **`/tr:initDoc`** - Initializes a lean, essential set of documentation for the project.
-- **`/tr:updateDoc`** - Update documentation system, synchronize technical documentation based on code changes
-- **`/tr:what`** - Smart instruction enhancement, provides clear technical guidance and suggestions for programming tasks
-
-### 🔧 Development Workflow
-
-- **`/tr:commit`** - Intelligent commit message generator that learns from your Git history
-- **`/tr:withScout`** - Handles a complex task by first investigating the codebase, then executing a plan.
-- **`/tr:reviewPR`** - Conducts an automated review of a GitHub Pull Request.
+---
 
 ## Recommended Workflow
 
-### 1. Initialize New Project
+### For New Projects
 
 ```bash
-# First time use, establish complete documentation system for your project
+# Initialize documentation system
 /tr:initDoc
 ```
 
-### 2. Daily Development Flow
+### For Daily Development
 
-```bash
-# Get clear programming guidance
-/tr:what "I need to implement user authentication feature"
+Just talk naturally. The system handles the rest:
 
-# Perform deep code analysis
-/tr:withScout "Analyze existing code architecture and find the best integration point"
+```
+"How does the auth system work?"
+# -> Auto-triggers /investigate, reads llmdoc first
 
-# Generate intelligent commit message
-/tr:commit
+"Add a new API endpoint for user profiles"
+# -> Reads llmdoc, investigates, implements, asks about doc update
+
+"commit"
+# -> Auto-triggers /commit with intelligent message
 ```
 
-### 3. Documentation Maintenance
+---
 
-```bash
-# Update documentation system after code changes
-/tr:updateDoc
-```
+## Cost & Effectiveness
 
-### 4. Code Quality Assurance
+**Honest assessment**: This approach costs approximately **1.5x more** to achieve a jump from 85 to 90 points in task completion quality.
 
-```bash
-# Review Pull Request
-/tr:reviewPR 123
-```
+- Simple projects: Marginal benefit
+- Complex projects: Significant benefit
+- Production codebases (100k+ lines): Excellent results
+
+In our production backend (100k lines of code):
+- Task completion cost: **$1-5 per feature**
+- Human intervention: **Significantly reduced**
+- Output quality: **Ready for review and minor adjustments**
+
+---
+
+## Internal Agents
+
+| Agent | Purpose |
+|-------|---------|
+| `worker` | Execute well-defined plans with precision |
+| `investigator` | Rapid, stateless codebase analysis |
+| `recorder` | Create and maintain llmdoc documentation |
+| `scout` | Deep investigation for initDoc |
 
 ---
 
 <div align="center">
 
-Made with ❤️ by DJJ & Danniel
+Made with care by **DJJ** & **Danniel** for the TokenRoll team
 
 </div>
