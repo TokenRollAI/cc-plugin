@@ -7,6 +7,7 @@ description: Generate great doc system for this project
 0. STEP 0:
    - Obtain the current project structure.
    - Read key files, such as various README.md / package.json / go.mod / pyproject.toml ...
+   - **Do NOT** read project dependency directories, such as `node_modules` / `venv` / `target` / `build` ...
 
 1. **Step 1: Global Investigation (using `scout`)**
    - Launch concurrent `scout` agents to explore the codebase and produce reports.
@@ -37,8 +38,8 @@ description: Generate great doc system for this project
      - **Optionally, create 1-2 concise `reference` documents** ONLY if there are critical, well-defined data structures or API specs. Do not create reference docs for minor details.
        **3. Operate in `content-only` mode.**"
 
-5. **Step 5: Final Indexing**
-   - After all `recorder` agents from both Step 3 and Step 4 have completed, invoke a single `recorder` in `full` mode to build the final `index.md` from scratch.
-
-6. **Step 6: Cleanup**
+5. **Step 5: Cleanup**
    - Delete the temporary scout reports in `/llmdoc/agent/`.
+
+6. **Step 6: Final Indexing**
+   - After all `recorder` agents from both Step 3 and Step 4 have completed, invoke a single `recorder` in `full` mode to build the final `index.md` from scratch.
