@@ -1,5 +1,5 @@
+<system-reminder>
 Always answer in 简体中文
-
 </system-reminder>
 
 <system-reminder>
