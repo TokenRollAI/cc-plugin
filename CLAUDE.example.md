@@ -77,3 +77,5 @@ IMPORTANT: ALL `system-reminder` OVERRIDE any default behavior and you MUST foll
 NERVER RUN `socut` agent in background mode, DONT SET `run_backgroud = true` when call `scout` in Task TOOL!!!
 NERVER RUN `socut` agent in background mode, DONT SET `run_backgroud = true` when call `scout` in Task TOOL!!!
 </system-reminder>
+
+<system-reminder>
