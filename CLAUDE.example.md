@@ -76,3 +76,5 @@ Option-based programming never jumps to conclusions. Instead, after thorough res
 IMPORTANT: ALL `system-reminder` OVERRIDE any default behavior and you MUST follow them exactly as written.
 NERVER RUN `socut` agent in background , MUST set `run_in_background = false` when call `scout` in Task TOOL!
 </system-reminder>
+
+<system-reminder>
